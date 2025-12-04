@@ -1,6 +1,8 @@
 # Starter code for Data Centric Programming Assignment 2025
 
-# os is a module that lets us access the file system
+# Karl Ypil C24383681
+
+
 
 # Bryan Duggan likes Star Trek
 # Bryan Duggan is a great flute player
@@ -8,71 +10,18 @@
 import os 
 import sqlite3
 import pandas as pd
-import mysql.connector
 
-def do_databasse_stuff():
-
-    conn = sqlite3.connect('tunes.db')
-    cursor = conn.cursor()
-
-    # Create table
-    cursor.execute('CREATE TABLE IF NOT EXISTS users (name TEXT, age INTEGER)')
-
-    # Insert data
-    cursor.execute('INSERT INTO users (name, age) VALUES (?, ?)', ('John', 30))
-
-    # Save changes
-    conn.commit()
-
-    cursor.execute('SELECT * FROM users')
-
-    # Get all results
-    results = cursor.fetchall()
-
-    # Print results
-    for row in results:
-        print(row)    
-        print(row[0])
-        print(row[1])
-    # Close
-    
-    df = pd.read_sql("SELECT * FROM users", conn)
-    print(df.head())
-    conn.close()
-
-def my_sql_database():
-    conn = mysql.connector.connect(host="localhost", user="root", database="tunepal")
-    
-    cursor = conn.cursor()
-    cursor.execute("select * from tuneindex")
-    
-    
-    while True:
-        row = cursor.fetchone()
-        if not row:
-            break
-        else:
-            print(row)
-    # results = cursor.fetchall()
-    
-    
-
-    # Print results
-    for row in results:
-        print(row)    
-    conn.close()
-    
-
-books_dir = "abc_books"
+books_dir = "abc_books" # location of the ABC tune folders
+DB_NAME = "tunes.db"
 
 def create_tables(conn):
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS tunes (
-        id INTERGER PRIMARY KEY AUTOINCREMENT,
-        book_number INTERGER,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        book_number INTEGER,
         file_name TEXT,
-        tune_index INTERGER,
+        tune_index INTEGER,
         title TEXT,
         tune_type TEXT,
         meter TEXT,
@@ -81,6 +30,59 @@ def create_tables(conn):
         );
     """)
     conn.commit()
+
+
+def find_abc_files():
+    """
+    Scan abc_books folder for any numbered subfolders and collect all the files inside them.
+    it returns a list of dictionaries
+    """
+    abc_files = []
+    
+    # looks inside the abc_books directory
+    for item in os.listdir(books_dir):
+        folder_path = os.path.join(books_dir, item)
+
+        # must be a folder AND must be named wit digits
+        if os.path.isdir(folder_path) and item.isdigit():
+            book_number = int(item)
+
+            # loop through files inside each numbered folder
+            for filename in os.listdir(folder_path):
+                if filename.endswith(".abc"):
+                    full_path = os.path.join(folder_path, filename)
+
+                    abc_files.append({
+                        "book": book_number,
+                        "file": filename,
+                        "path": full_path
+                    })
+    return abc_files
+
+def parse_abc_file(path, book_number, file_name):
+    """
+    Skeleton for the ABC parsing function.
+    -Opens the file 
+    -Strips whitespace
+    -Prints a preview of it's contents
+    """
+
+    # reads the ABC file
+    with open(path, "r", encoding="utf-8") as f:
+        raw_lines = f.readlines()
+
+    # remove trailing spaces and newline characters
+    cleaned_lines = [line.strip() for line in raw_lines]
+
+    # debug preview so we know it's working
+    print(f"\n Reading ABC file: {file_name} (Book {book_number})")
+    print("----")
+    for line in cleaned_lines[:10]:
+        print(line)
+    print("----")
+
+    return []
+
 
 def process_file(file):
     with open(file, 'r') as f:
@@ -114,3 +116,20 @@ for item in os.listdir(books_dir):
                 print(f"  Found abc file: {file}")
                 process_file(file_path)
                 
+if __name__ == "__main__":
+    # 1) open the database connection
+    conn = sqlite3.connect(DB_NAME)
+    create_tables(conn)
+
+    #2) Find all .abc files
+    abc_files = find_abc_files()
+    print(f"\nFound {len(abc_files)} ABC files total. \n")
+
+    #3) for each ABC file call the parser skeleton
+    for f in abc_files:
+        parse_abc_file(
+            path=f["path"],
+            book_number=f["book"],
+            file_name=f["file"]
+        )
+    conn.close()
