@@ -9,10 +9,7 @@ import os
 import sqlite3
 import pandas as pd
 import mysql.connector
-# sqlite for connecting to sqlite databases
 
-# An example of how to create a table, insert data
-# and run a select query
 def do_databasse_stuff():
 
     conn = sqlite3.connect('tunes.db')
@@ -67,6 +64,23 @@ def my_sql_database():
     
 
 books_dir = "abc_books"
+
+def create_tables(conn):
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS tunes (
+        id INTERGER PRIMARY KEY AUTOINCREMENT,
+        book_number INTERGER,
+        file_name TEXT,
+        tune_index INTERGER,
+        title TEXT,
+        tune_type TEXT,
+        meter TEXT,
+        tune_key TEXT,
+        raw_abc TEXT
+        );
+    """)
+    conn.commit()
 
 def process_file(file):
     with open(file, 'r') as f:
