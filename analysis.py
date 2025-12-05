@@ -50,3 +50,22 @@ def tunes_by_type() -> pd.DataFrame:
 
     conn.close()
     return df
+
+def tunes_per_book() -> pd.DataFrame:
+    """
+    df that shows how many tunes cam from each book directory.
+    """
+    conn = get_connection()
+
+    df = pd.read_sql_query(
+        """
+        SELECT book_number, COUNT(*) AS tune_count
+        FROM tunes
+        GROUP BY book_number
+        ORDER BY book_number;
+        """,
+        conn,
+    )
+
+    conn.close()
+    return df
