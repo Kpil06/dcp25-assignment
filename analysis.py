@@ -69,3 +69,14 @@ def tunes_per_book() -> pd.DataFrame:
 
     conn.close()
     return df
+
+if __name__ == "__main__":
+
+    print("\n---Tunes by key---\n")
+    print(tunes_by_key())
+
+    print("\n---Tunes by type---\n")
+    print(tunes_by_type())
+
+    print("\n---Tunes by book---\n")
+    print(tunes_by_book())
