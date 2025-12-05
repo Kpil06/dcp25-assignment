@@ -23,3 +23,19 @@ def plot_tunes_by_type() -> None:
     plt.ylabel("Number of tunes")
     plt.tight_layout()
     plt.show()
+
+def plot_tunes_by_key() -> None:
+    """
+    Bar chart showing how many tunes per key.
+    """
+    df = tunes_by_key()
+
+    plt.figure(figsize=(12, 6))
+    plt.bar(df["tune_type"].astype(str), df["tune_count"])
+    plt.xticks(rotation=90)
+
+    plt.title("Number of tunes per key")
+    plt.xlabel("Key")
+    plt.ylabel("Number of tunes")
+    plt.tight_layout()
+    plt.show()
