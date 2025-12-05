@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # import the analysis functions
 from analysis import tunes_by_key, tunes_by_type
 
-def plot_tunes)by_key() -> None:
+def plot_tunes_by_type() -> None:
     """
     Bar chart showing how many tunes per tune type.
     """
