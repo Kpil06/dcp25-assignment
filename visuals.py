@@ -5,4 +5,7 @@ imports the analysis functions that are already in the df and use them to make g
 
 import matplotlib.pyplot as plt
 
-# imort the analysis functions
+# import the analysis functions
+from analysis import tunes_by_key, tunes_by_type, tunes_per_book
+
+
