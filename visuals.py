@@ -6,20 +6,20 @@ imports the analysis functions that are already in the df and use them to make g
 import matplotlib.pyplot as plt
 
 # import the analysis functions
-from analysis import tunes_by_key, tunes_by_type
+from analysis import tunes_by_key, tunes_per_book
 
-def plot_tunes_by_type() -> None:
+def plot_tunes_per_book() -> None:
     """
-    Bar chart showing how many tunes per tune type.
+    Bar chart showing how many tunes per tune book.
     """
-    df = tunes_by_type()
+    df = tunes_per_Book()
 
-    plt.figure(figsize=(10, 6))
-    plt.bar(df["tune_type"].astype(str), df["tune_count"])
+    plt.figure(figsize=(8, 5))
+    plt.bar(df["book_number"].astype(str), df["tune_count"])
     plt.xticks(rotation=45)
 
-    plt.title("Number of tunes per tune type")
-    plt.xlabel("Tune type")
+    plt.title("Number of tunes per book")
+    plt.xlabel("Book number")
     plt.ylabel("Number of tunes")
     plt.tight_layout()
     plt.show()
@@ -39,3 +39,10 @@ def plot_tunes_by_key() -> None:
     plt.ylabel("Number of tunes")
     plt.tight_layout()
     plt.show()
+
+if __name__ == "__main__":
+    print("Showing tunes per type..")
+    plot_tunes_by_type()
+
+    print("Showing tunes per key...")
+    plot_tunes_by_key()
