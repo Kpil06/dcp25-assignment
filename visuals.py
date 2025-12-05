@@ -41,8 +41,8 @@ def plot_tunes_by_key() -> None:
     plt.show()
 
 if __name__ == "__main__":
-    print("Showing tunes per type..")
-    plot_tunes_by_type()
+    print("Showing tunes per book..")
+    plot_tunes_per_book()
 
     print("Showing tunes per key...")
     plot_tunes_by_key()
