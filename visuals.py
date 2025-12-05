@@ -31,7 +31,7 @@ def plot_tunes_by_key() -> None:
     df = tunes_by_key()
 
     plt.figure(figsize=(12, 6))
-    plt.bar(df["tune_type"].astype(str), df["tune_count"])
+    plt.bar(df["tune_key"].astype(str), df["tune_count"])
     plt.xticks(rotation=90)
 
     plt.title("Number of tunes per key")
