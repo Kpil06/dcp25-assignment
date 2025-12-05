@@ -9,6 +9,8 @@
 import os 
 import sqlite3
 import pandas as pd
+import matplotlib.pyplot as plt
+import tkinter as tk
 
 books_dir = "abc_books" # location of the ABC tune folders
 DB_NAME = "tunes.db"
@@ -247,12 +249,12 @@ def import_all_abc():
     for item in os.listdir(books_dir):
         item_path = os.path.join(books_dir, item)
 
-        # Check if it's a directory with a numeric name (1, 2, 3, ...)
+        # Check if it's a directory with a numeric name
         if os.path.isdir(item_path) and item.isdigit():
             book_number = int(item)
             print(f"Found numbered directory (book): {book_number}")
 
-            # 4) Loop through every .abc file in this book folder
+            # 4) Loop through every .abc file 
             for file_name in os.listdir(item_path):
                 if file_name.endswith(".abc"):
                     file_path = os.path.join(item_path, file_name)
