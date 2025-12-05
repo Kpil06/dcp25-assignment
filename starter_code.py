@@ -59,29 +59,67 @@ def find_abc_files():
                     })
     return abc_files
 
+
+
 def parse_abc_file(path, book_number, file_name):
     """
-    Skeleton for the ABC parsing function.
-    -Opens the file 
-    -Strips whitespace
-    -Prints a preview of it's contents
+    Parse an .abc file and return a list of tune dictionaries.
+
+    The function:
+    - Reads all lines from the file
+    - Skips intro text till it finds a line starting with 'X:' or end of the file
+    - Extracts the basic metadata form the header lines
     """
-
-    # reads the ABC file
-    with open(path, "r", encoding="utf-8") as f:
-        raw_lines = f.readlines()
-
-    # remove trailing spaces and newline characters
-    cleaned_lines = [line.strip() for line in raw_lines]
-
-    # debug preview so we know it's working
-    print(f"\n Reading ABC file: {file_name} (Book {book_number})")
-    print("----")
-    for line in cleaned_lines[:10]:
-        print(line)
+    print(f"Reading ABC file: {file_name} (Book {book_number})")
     print("----")
 
-    return []
+    tunes = [] # list to hold all the tunes in this file
+    current_lines = [] # lines for teh tune we are currently building
+
+    # Opens and reads all lines, stripping newline characters
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        lines = [line.rstrip("\n") for line in f]
+
+    for line in lines:
+        # when we see a new 'X:' line that means:
+        # If we were already ina. tune, we should finish it first
+        # Then after start a new tune
+        if line.startswith("X:"):
+            # If we have lines from a pervious tune, we finish it
+            if current_lines:
+                tune = build_tune_from_lines(
+                    current_lines,
+                    book_number,
+                    file_name
+                )
+                tunes.append(tune)
+
+            # start a new tune with X:
+            current_lines = [line]
+        else:
+            # if X not reached we are in the intro, so skip
+            if current_lines: # only collect lines after hitting the first X:
+                current_lines.append(line)
+
+    # after the loop ends, a tune might still be in progress
+    if current_lines:
+        tune = build_tune_from_lines(
+            current_lines,
+            book_number,
+            file_name
+        )
+        tunes.append(tune)
+        print(f"    Parsed tune X:{tune['tune_index']} - {tune['title']}")
+        print("----")
+    
+    print(f"Finished {file_name}: {len(tunes)} tunes found\n")
+    
+    return tunes
+
+
+
+
+   
 
 
 def process_file(file):
