@@ -8,9 +8,6 @@
 # Bryan Duggan is a great flute player
 import os 
 import sqlite3
-import pandas as pd
-import matplotlib.pyplot as plt
-import tkinter as tk
 
 books_dir = "abc_books" # location of the ABC tune folders
 DB_NAME = "tunes.db"
@@ -55,7 +52,6 @@ def insert_tunes(conn, tunes):
     cursor = conn.cursor()
 
     # Build a list of tuples (one per tune) with values in the same order
-    # as the columns in the INSERT statement.
     rows_to_insert = [
         (
             tune["book_number"],  # book folder number, e.g. 1 or 2
@@ -118,7 +114,7 @@ def find_abc_files():
 
 def build_tune_from_lines(lines, book_number, file_name):
     """
-    We are given all the lines for a single tune, so wee extract the header fields and return a dictionary ready to insert into the database.
+    We are given all the lines for a single tune, so we extract the header fields and return a dictionary ready to insert into the database.
     """
 
     tune_index = None   # X:
@@ -225,18 +221,6 @@ def parse_abc_file(path, book_number, file_name):
     
     return tunes
 
-
-def process_file(file):
-    with open(file, 'r') as f:
-        lines = f.readlines()
-    # list comprehension to strip the \n's
-    lines = [line.strip() for line in lines]
-
-    # just print the files for now
-    for line in lines:
-        # print(line)
-        pass
-
 def import_all_abc():
     """
     Walk through the abc_books directory, parse every .abc file
@@ -305,12 +289,3 @@ if __name__ == "__main__":
     #2) Find all .abc files
     abc_files = find_abc_files()
     print(f"\nFound {len(abc_files)} ABC files total. \n")
-
-    #3) for each ABC file call the parser skeleton
-    for f in abc_files:
-        parse_abc_file(
-            path=f["path"],
-            book_number=f["book"],
-            file_name=f["file"]
-        )
-    conn.close()
