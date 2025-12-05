@@ -51,7 +51,7 @@ def insert_tunes(conn, tunes):
     """
     cursor = conn.cursor()
 
-    # Build a list of tuples (one per tune) with values in the same order
+    # Build a list of tuples 
     rows_to_insert = [
         (
             tune["book_number"],  # book folder number, e.g. 1 or 2
@@ -61,7 +61,7 @@ def insert_tunes(conn, tunes):
             tune["tune_type"],    # R: line
             tune["meter"],        # M: line
             tune["tune_key"],     # K: line
-            tune["raw_abc"],      # full raw ABC text for that tune
+            tune["raw_abc"],      
         )
         for tune in tunes
     ]
