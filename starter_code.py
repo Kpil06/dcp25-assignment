@@ -59,6 +59,58 @@ def find_abc_files():
                     })
     return abc_files
 
+def build_tune_from_lines(lines, book_number, file_name):
+    """
+    We are given all the lines for a single tune, so wee xtract the header fields and return a dictionary ready to insert into the database.
+    """
+
+    tune_index = None   # X:
+    title = None        #first T:
+    tune_type = None    # R:
+    meter = None        # M:
+    tune_key = None     #K:
+
+    for line in lines:
+        # remove leading/trailing spaces
+        stripped = line.strip()
+
+        # tune index
+        if stripped.startswith("X:"):
+            # everything after x is the number
+            try:
+                tune_index = int(stripped[2:].strip())
+            except ValueError:
+                tune_index = None
+
+        # Title, only use the first T: line
+        elif stripped.startswith("T:") and title is None:
+            title = stripped[2:].strip()
+        
+        # Rythmn / tune_type
+        elif stripped.startswith("R:") and tune_type is None:
+            tune_type = stripped[2:].strip()
+
+        # Meter
+        elif stripped.startswith("M:") and meter is None:
+            meter = stripped[2:].strip()
+
+        # Key
+        elif stripped.startswith("K:") and tune_key is None:
+            tune_key = stripped[2:].strip()
+    
+    # Join all teh lines together as one block of ABC text
+    raw_abc = "\n".join(lines)
+
+    return {
+        "book_number": book_number,
+        "file_name": file_name,
+        "tune_index": tune_index,
+        "title": title,
+        "tune_type": tune_type,
+        "meter": meter,
+        "tune_key": tune_key,
+        "raw_abc": raw_abc
+    }
 
 
 def parse_abc_file(path, book_number, file_name):
