@@ -32,40 +32,53 @@ def create_tables(conn):
 
 def insert_tunes(conn, tunes):
     """
-    Inserting a list of tune dictionaries into the tunes table.
-    uses executemany for efficiency
+    Insert a list of tune dictionaries into the tunes table.
+
+    Each tune dict should have keys:
+      - book_number
+      - file_name
+      - tune_index
+      - title
+      - tune_type
+      - meter
+      - tune_key
+      - raw_abc
     """
     cursor = conn.cursor()
 
-    records = [
+    # Build a list of tuples (one per tune) with values in the same order
+    # as the columns in the INSERT statement.
+    rows_to_insert = [
         (
-            t["book_number"],
-            t["file_name"],
-            t["tune_index"],
-            t["title"],
-            t["tune_type"],
-            t["meter"],
-            t["tune_key"],
-            t["raw_abc"],
+            tune["book_number"],  # book folder number, e.g. 1 or 2
+            tune["file_name"],    # abc file name, e.g. "hnbuchimish0.abc"
+            tune["tune_index"],   # X: number in the ABC
+            tune["title"],        # T: line
+            tune["tune_type"],    # R: line
+            tune["meter"],        # M: line
+            tune["tune_key"],     # K: line
+            tune["raw_abc"],      # full raw ABC text for that tune
         )
-        for t in tunes
+        for tune in tunes
     ]
 
+    # Use executemany with (SQL, list_of_tuples)
     cursor.executemany("""
-        INSERT INTO tunes(
-        book_number,
-        file_name,
-        tune_index,
-        title,
-        tune_type,
-        meter,
-        tune_key,
-        raw_abc
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """)
+        INSERT INTO tunes (
+            book_number,
+            file_name,
+            tune_index,
+            title,
+            tune_type,
+            meter,
+            tune_key,
+            raw_abc
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, rows_to_insert)
 
+    # Save the changes to the DB
     conn.commit()
-    print(f"Inserted {len(tunes)} tunes into the database.")
 
 
 def find_abc_files():
