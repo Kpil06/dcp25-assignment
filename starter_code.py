@@ -31,6 +31,44 @@ def create_tables(conn):
     """)
     conn.commit()
 
+def insert_tunes(conn, tunes):
+    """
+    Inserting a list of tune dictionaries into the tunes table.
+    uses executemany for efficiency
+    """
+
+    cursor = conn.cursor()
+
+    records = [
+        (
+            t["book_number"],
+            t["file_name"],
+            t["tune_index"],
+            t["title"],
+            t["tune_type"],
+            t["meter"],
+            t["tune_key"],
+            t["raw_abc"],
+        )
+        for t in tunes
+    ]
+
+    cursor.executemany("""
+        INSERT INTO tunes(
+        book_number,
+        file_name,
+        tune_index,
+        title,
+        tune_type,
+        meter,
+        tune_key,
+        raw_abc
+        ) VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+        """, records)
+
+    conn.commit()
+    print(f"Inserted {len(tunes)} tunes into the database.")
+
 
 def find_abc_files():
     """
