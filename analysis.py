@@ -13,3 +13,21 @@ def get_connection() -> sqlite3.Connection:
     """
     return sqlite3.connect(DB_NAME)
 
+def tunes_by_key() -> pd.DataFrame:
+    """
+    Returns a dataframe showing how many tunes are in each key.
+    """
+    conn = get_connection()
+
+    df = pd.read_sql_query(
+        """
+        SELECT tune_key, COUNT(*) AS tune_count
+        FROM tunes
+        GROUP BY tune_key
+        ORDER BY tune_count DESC;
+        """,
+        conn,
+    )
+
+    conn.close()
+    return df
