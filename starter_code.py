@@ -6,7 +6,6 @@
 
 # Bryan Duggan likes Star Trek
 # Bryan Duggan is a great flute player
-# this is a test commit!
 import os 
 import sqlite3
 import pandas as pd
@@ -36,7 +35,6 @@ def insert_tunes(conn, tunes):
     Inserting a list of tune dictionaries into the tunes table.
     uses executemany for efficiency
     """
-
     cursor = conn.cursor()
 
     records = [
@@ -63,8 +61,8 @@ def insert_tunes(conn, tunes):
         meter,
         tune_key,
         raw_abc
-        ) VALUES(?, ?, ?, ?, ?, ?, ?, ?)
-        """, records)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """)
 
     conn.commit()
     print(f"Inserted {len(tunes)} tunes into the database.")
@@ -99,7 +97,7 @@ def find_abc_files():
 
 def build_tune_from_lines(lines, book_number, file_name):
     """
-    We are given all the lines for a single tune, so wee xtract the header fields and return a dictionary ready to insert into the database.
+    We are given all the lines for a single tune, so wee extract the header fields and return a dictionary ready to insert into the database.
     """
 
     tune_index = None   # X:
@@ -207,11 +205,6 @@ def parse_abc_file(path, book_number, file_name):
     return tunes
 
 
-
-
-   
-
-
 def process_file(file):
     with open(file, 'r') as f:
         lines = f.readlines()
@@ -223,27 +216,66 @@ def process_file(file):
         # print(line)
         pass
 
+def import_all_abc():
+    """
+    Walk through the abc_books directory, parse every .abc file
+    from all numbered subfolders, and insert all tunes into the SQLite DB.
+    """
 
-# my_sql_database()
-# do_databasse_stuff()
+    # 1) Open ONE connection for the entire import
+    conn = sqlite3.connect(DB_NAME)
 
-# Iterate over directories in abc_books
-for item in os.listdir(books_dir):
-    # item is the dir name, this makes it into a path
-    item_path = os.path.join(books_dir, item)
-    
-    # Check if it's a directory and has a numeric name
-    if os.path.isdir(item_path) and item.isdigit():
-        print(f"Found numbered directory: {item}")
-        
-        # Iterate over files in the numbered directory
-        for file in os.listdir(item_path):
-            # Check if file has .abc extension
-            if file.endswith('.abc'):
-                file_path = os.path.join(item_path, file)
-                print(f"  Found abc file: {file}")
-                process_file(file_path)
-                
+    # 2) Ensure tables exist
+    create_tables(conn)
+
+    total_tunes = 0
+
+    # 3) Walk through the parent directory containing book folders
+    for item in os.listdir(books_dir):
+        item_path = os.path.join(books_dir, item)
+
+        # Check if it's a directory with a numeric name (1, 2, 3, ...)
+        if os.path.isdir(item_path) and item.isdigit():
+            book_number = int(item)
+            print(f"Found numbered directory (book): {book_number}")
+
+            # 4) Loop through every .abc file in this book folder
+            for file_name in os.listdir(item_path):
+                if file_name.endswith(".abc"):
+                    file_path = os.path.join(item_path, file_name)
+
+                    print(f"Reading ABC file: {file_name} (Book {book_number})")
+
+                    # 5) Parse tunes from this file
+                    tunes = parse_abc_file(
+                        path=file_path,
+                        book_number=book_number,
+                        file_name=file_name
+                    )
+
+                    print("----")
+                    if tunes:
+                        # Debug summary
+                        first_tune = tunes[0]
+                        print(f"    Parsed tune X:{first_tune['tune_index']} - {first_tune['title']}")
+                        print(f"Finished {file_name}: {len(tunes)} tunes found\n")
+
+                        # 6) Insert into DB using the SAME conn
+                        insert_tunes(conn, tunes)
+                        total_tunes += len(tunes)
+                    else:
+                        print(f"    No tunes found in {file_name}\n")
+
+    print(f"Inserted {total_tunes} tunes into the database in total.")
+
+    # 7) Only close AFTER all books/files are processed
+    conn.close()
+
+# runs the import if the script is executed directly
+if __name__ == "__main__":
+    import_all_abc()
+
+
 if __name__ == "__main__":
     # 1) open the database connection
     conn = sqlite3.connect(DB_NAME)
