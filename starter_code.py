@@ -12,11 +12,6 @@ import sqlite3
 books_dir = "abc_books" # location of the ABC tune folders
 DB_NAME = "tunes.db"
 
-def get_connection():
-    """
-    Helper function to open connection to SQLite.
-    """
-    return sqlite3.connect(DB_NAME)
 
 def create_tables(conn):
     cursor = conn.cursor()
@@ -281,11 +276,4 @@ if __name__ == "__main__":
     import_all_abc()
 
 
-if __name__ == "__main__":
-    # 1) open the database connection
-    conn = sqlite3.connect(DB_NAME)
-    create_tables(conn)
 
-    #2) Find all .abc files
-    abc_files = find_abc_files()
-    print(f"\nFound {len(abc_files)} ABC files total. \n")
