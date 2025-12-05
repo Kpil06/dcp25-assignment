@@ -12,7 +12,7 @@ def plot_tunes_per_book() -> None:
     """
     Bar chart showing how many tunes per tune book.
     """
-    df = tunes_per_Book()
+    df = tunes_per_book()
 
     plt.figure(figsize=(8, 5))
     plt.bar(df["book_number"].astype(str), df["tune_count"])
