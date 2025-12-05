@@ -15,6 +15,12 @@ import tkinter as tk
 books_dir = "abc_books" # location of the ABC tune folders
 DB_NAME = "tunes.db"
 
+def get_connection():
+    """
+    Helper function to open connection to SQLite.
+    """
+    return sqlite3.connect(DB_NAME)
+
 def create_tables(conn):
     cursor = conn.cursor()
     cursor.execute("""
